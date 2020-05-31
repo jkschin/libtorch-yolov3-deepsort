@@ -189,7 +189,7 @@ void Detector::Darknet::create_modules() {
             module->push_back(conv);
 
             if (batch_normalize > 0) {
-                torch::nn::BatchNorm bn = torch::nn::BatchNorm(bn_options(filters));
+                torch::nn::BatchNorm2d bn = torch::nn::BatchNorm2d(bn_options(filters));
                 module->push_back(bn);
             }
 

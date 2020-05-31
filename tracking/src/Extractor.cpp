@@ -13,25 +13,25 @@ namespace {
                     nn::Sequential(
                             nn::Conv2d(nn::Conv2dOptions(c_in, c_out, 3)
                                                .stride(is_downsample ? 2 : 1)
-                                               .padding(1).with_bias(false)),
-                            nn::BatchNorm(c_out),
+                                               .padding(1).bias(false)),
+                            nn::BatchNorm2d(c_out),
                             nn::Functional(torch::relu),
                             nn::Conv2d(nn::Conv2dOptions(c_out, c_out, 3)
-                                               .stride(1).padding(1).with_bias(false)),
-                            nn::BatchNorm(c_out)));
+                                               .stride(1).padding(1).bias(false)),
+                            nn::BatchNorm2d(c_out)));
 
             if (is_downsample) {
                 downsample = register_module(
                         "downsample",
                         nn::Sequential(nn::Conv2d(nn::Conv2dOptions(c_in, c_out, 1)
-                                                          .stride(2).with_bias(false)),
-                                       nn::BatchNorm(c_out)));
+                                                          .stride(2).bias(false)),
+                                       nn::BatchNorm2d(c_out)));
             } else if (c_in != c_out) {
                 downsample = register_module(
                         "downsample",
                         nn::Sequential(nn::Conv2d(nn::Conv2dOptions(c_in, c_out, 1)
-                                                          .stride(1).with_bias(false)),
-                                       nn::BatchNorm(c_out)));
+                                                          .stride(1).bias(false)),
+                                       nn::BatchNorm2d(c_out)));
             }
         }
 
@@ -54,12 +54,12 @@ namespace {
 
     void load_Conv2d(nn::Conv2d m, ifstream &fs) {
         load_tensor(m->weight, fs);
-        if (m->options.with_bias()) {
+        if (m->options.bias()) {
             load_tensor(m->bias, fs);
         }
     }
 
-    void load_BatchNorm(nn::BatchNorm m, ifstream &fs) {
+    void load_BatchNorm(nn::BatchNorm2d m, ifstream &fs) {
         load_tensor(m->weight, fs);
         load_tensor(m->bias, fs);
         load_tensor(m->running_mean, fs);
@@ -71,7 +71,7 @@ namespace {
         for (auto &m:s->children()) {
             if (auto c = dynamic_pointer_cast<nn::Conv2dImpl>(m)) {
                 load_Conv2d(c, fs);
-            } else if (auto b = dynamic_pointer_cast<nn::BatchNormImpl>(m)) {
+            } else if (auto b = dynamic_pointer_cast<nn::BatchNorm2dImpl>(m)) {
                 load_BatchNorm(b, fs);
             }
         }
@@ -91,7 +91,7 @@ NetImpl::NetImpl() {
                             nn::Sequential(
                                     nn::Conv2d(nn::Conv2dOptions(3, 64, 3)
                                                        .stride(1).padding(1)),
-                                    nn::BatchNorm(64),
+                                    nn::BatchNorm2d(64),
                                     nn::Functional(torch::relu)));
     conv2 = register_module("conv2", nn::Sequential());
     conv2->extend(*make_layers(64, 64, 2, false));
