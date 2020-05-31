@@ -1,5 +1,54 @@
 # Overview
-*It is for my undergrad thesis in Tsinghua University.*
+Forked from [here](https://github.com/weixu000/libtorch-yolov3-deepsort).
+
+## Libraries Used
+
+1. libtorch - 1.5.0 GPU enabled version.
+2. OpenCV - 3.4.7
+3. wxWidgets - 3.0.0. Simply install using apt.
+4. CMake
+5. CUDA 10.1 with CUDNN 7.6.5.32 allows you to successfully compile. My driver
+   was not compatible with the latest CUDA. I upgraded my driver to 435.21. The
+   build could run.
+
+## Build
+
+1. `mkdir build`
+2. `cd build`
+3. `CMAKE_PREFIX_PATH=/home/$USER/cpplibs/libtorch-1.5.0-gpu cmake ../`
+4. `make -j8`
+
+## Usage
+
+1. After building, there will be a `build/bin/GUI` and `build/bin/processing`
+   file. The GUI is used to visualize the results and processing is used to run
+   a video.
+2. A sample test video can be downloaded from [TownCentreXVID.avi](http://www.robots.ox.ac.uk/ActiveVision/Research/Projects/2009bbenfold_headpose/Datasets/TownCentreXVID.avi).
+3. In the root directory of the project, create a `weights` folder and put
+   `yolov3.weights`, which can be downloaded from
+   [Darknet](https://pjreddie.com/darknet/yolo/). You should download
+   YOLOv3-416, as this is what this repository uses.
+4. Run `./build/bin/processing /path/to/TownCentreXVID.avi scale_factor`. A
+   scale factor of 1 means original sized images are used. 4 means you're
+   scaling the image down by 4. I need to check how the scaling is done in the
+   code.
+5. The results will be written to a `results` folder. 
+6. `./build/bin/GUI` and simply select the `results` folder to visualize the
+   results. It's a pretty neat tool.
+
+## Statistics
+
+Builds were run on a GTX 1060 with 6GB of RAM.
+
+1. Scale: 1. FPS: 2.6.
+2. Scale: 4. FPS: 17.0.
+
+## Other Notes
+
+1. A build using CUDA 8.0 and CUDNN 5.0 probably will not work against PyTorch
+   1.5.0. The error message said that you needed at least CUDA 9.0.
+
+# Original Comments from weixu000
 
 There are four modules in the project:
 
